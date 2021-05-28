@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Npad</string>
+    <string name="edittext_npad_hint">Start writing!!</string>
+    <string name="start_taking_notes">Start taking notes!!</string>
+</resources>
