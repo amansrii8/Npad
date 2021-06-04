@@ -2,4 +2,6 @@
     <string name="app_name">Npad</string>
     <string name="edittext_npad_hint">Start writing!!</string>
     <string name="start_taking_notes">Start taking notes!!</string>
+    <string name="toolbar_title_note">Make a note</string>
+    <string name="menu_title_find">Find</string>
 </resources>

@@ -1,8 +1,11 @@
 package com.example.myapplication.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -24,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar myToolBar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolBar);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle(getString(R.string.toolbar_title_note));
+
         editTextNpad = findViewById(R.id.edittext_npad);
         textViewNPad = findViewById(R.id.textview_npad);
 
@@ -36,6 +44,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_find:
+                //TODO:
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private String highlightSearchedText() {
+
+        return "";
     }
 
     @Override
