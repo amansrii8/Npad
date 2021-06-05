@@ -9,10 +9,8 @@ public class Notes extends RealmObject {
     @Required
     String notesID;
 
-    @Required
     String name;
 
-    @Required
     String data;
 
     public String getNotesID() {return this.notesID;}

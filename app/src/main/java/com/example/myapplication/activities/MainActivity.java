@@ -15,12 +15,17 @@ import android.content.Intent;
 import com.example.myapplication.R;
 import com.example.myapplication.db.Notes;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText editTextNpad;
     private TextView textViewNPad;
+    private EditText editTextViewNPadTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +39,15 @@ public class MainActivity extends AppCompatActivity {
 
         editTextNpad = findViewById(R.id.edittext_npad);
         textViewNPad = findViewById(R.id.textview_npad);
+        editTextViewNPadTitle = findViewById(R.id.textView_notes_title);
 
         textViewNPad.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent e) {
-                textViewNPad.setVisibility(View.INVISIBLE);
+                textViewNPad.setVisibility(View.GONE);
                 editTextNpad.setVisibility(View.VISIBLE);
+                editTextViewNPadTitle.setVisibility(View.VISIBLE);
+
                 return true;
             }
         });
@@ -65,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Notes notes = new Notes();
-        notes.setNotesID("1");
-        notes.setNotesName("New Data");
+        notes.setNotesID(UUID.randomUUID().toString());
+        notes.setNotesName(editTextViewNPadTitle.getText().toString());
         notes.setData(editTextNpad.getText().toString());
 
         Realm realm = Realm.getDefaultInstance();
@@ -81,4 +89,6 @@ public class MainActivity extends AppCompatActivity {
 
         super.onBackPressed();
     }
+
+
 }
