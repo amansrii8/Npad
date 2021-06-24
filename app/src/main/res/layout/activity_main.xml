@@ -19,23 +19,15 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <TextView
-        android:id="@+id/textview_npad"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="17dp"
-        android:gravity="start"
-        android:layout_weight="1"
-        android:hint="@string/edittext_npad_hint" />
-
     <EditText
         android:id="@+id/textView_notes_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
         android:hint="@string/notes_title"
+        android:inputType="textCapSentences|textMultiLine"
         android:layout_weight=".1"
-        android:visibility="gone" />
+        android:scrollHorizontally="false" />
 
     <EditText
         android:id="@+id/edittext_npad"
@@ -45,8 +37,8 @@
         android:layout_margin="@dimen/edittext_margin"
         android:gravity="start"
         android:hint="@string/edittext_npad_hint"
-        android:inputType="text"
+        android:inputType="textCapSentences|textMultiLine"
         android:textSize="@dimen/edittext_fontsize"
-        android:visibility="gone" />
+        android:scrollHorizontally="false" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

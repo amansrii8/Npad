@@ -11,13 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/edittext_margin"
-        android:background="@android:color/holo_blue_dark"/>
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:background="@color/note_title"/>
 
     <TextView
         android:id="@+id/textview_file_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/edittext_margin"
-        android:background="@android:color/holo_blue_bright"/>
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:background="@color/note_body"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class HomePageActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener {
 
@@ -59,11 +60,14 @@ public class HomePageActivity extends AppCompatActivity implements MyRecyclerVie
 
     @Override
     public void onItemClick(View view, int position) {
-
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(getString(R.string.note_id), getPreviouslyStoredNotes().get(position).getNotesID());
+        startActivity(intent);
+        finish();
     }
 
     private ArrayList<Notes> getPreviouslyStoredNotes() {
-        RealmResults<Notes> notesData =realmDB.where(Notes.class).findAll();
+        RealmResults<Notes> notesData =realmDB.where(Notes.class).findAll().sort("timeOfModification", Sort.DESCENDING);
         return new ArrayList<>(notesData);
     }
 }

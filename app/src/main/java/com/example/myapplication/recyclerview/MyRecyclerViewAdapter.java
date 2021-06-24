@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.activities.HomePageActivity;
+import com.example.myapplication.activities.MainActivity;
 import com.example.myapplication.db.Notes;
 
 import java.util.ArrayList;
@@ -19,10 +21,12 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     private LayoutInflater myInflator;
     private ArrayList<Notes> notes;
     private ItemClickListener onItemClickListener;
+    private Context context;
 
     public MyRecyclerViewAdapter(Context context, ArrayList<Notes> notes) {
         myInflator = LayoutInflater.from(context);
         this.notes = new ArrayList<>(notes);
+        onItemClickListener = (HomePageActivity)context;
     }
 
     @Override
@@ -67,10 +71,10 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
             return notes.get(id);
         }
 
-        // allows clicks events to be caught
-        void setClickListener(ItemClickListener itemClickListener) {
-            onItemClickListener = itemClickListener;
-        }
+//        // allows clicks events to be caught
+//        void setClickListener(ItemClickListener itemClickListener) {
+//            onItemClickListener = itemClickListener;
+//        }
     }
 
     // parent activity will implement this method to respond to click events

@@ -1,31 +1,29 @@
 package com.example.myapplication.activities;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.EditText;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.content.Intent;
-
 import com.example.myapplication.R;
 import com.example.myapplication.db.Notes;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
+import static com.example.myapplication.db.Utility.*;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText editTextNpad;
-    private TextView textViewNPad;
     private EditText editTextViewNPadTitle;
+    private Realm realmDB;
+    private Notes notes;
+    private String noteID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,25 +36,24 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(getString(R.string.toolbar_title_note));
 
         editTextNpad = findViewById(R.id.edittext_npad);
-        textViewNPad = findViewById(R.id.textview_npad);
         editTextViewNPadTitle = findViewById(R.id.textView_notes_title);
 
-        textViewNPad.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent e) {
-                textViewNPad.setVisibility(View.GONE);
-                editTextNpad.setVisibility(View.VISIBLE);
-                editTextViewNPadTitle.setVisibility(View.VISIBLE);
+        Realm.init(this);
+        realmDB = Realm.getDefaultInstance();
 
-                return true;
-            }
-        });
+        noteID = getIntent().getStringExtra("PrimaryKey");
+
+        if (noteID != null) {
+            notes = getNotesFromPrimaryKey(noteID);
+            editTextViewNPadTitle.setText(notes.getNotesName());
+            editTextNpad.setText(notes.getData());
+        }
 
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_find:
                 //TODO:
 
@@ -70,24 +67,42 @@ public class MainActivity extends AppCompatActivity {
         return "";
     }
 
+    private Notes getNotesFromPrimaryKey(String primaryKey) {
+
+        return realmDB
+                .where(Notes.class)
+                .equalTo("notesID", primaryKey).findFirst();
+    }
+
     @Override
     public void onBackPressed() {
         Notes notes = new Notes();
-        notes.setNotesID(UUID.randomUUID().toString());
-        notes.setNotesName(editTextViewNPadTitle.getText().toString());
-        notes.setData(editTextNpad.getText().toString());
+        if (noteID != null) {
+            updateNoteIntoDB(createNotesObject(noteID, editTextViewNPadTitle.getText().toString(),
+                    editTextNpad.getText().toString(), notes), realmDB);
+        } else {
+            insertNoteIntoDB(createNotesObject(UUID.randomUUID().toString(),
+                    editTextViewNPadTitle.getText().toString(),
+                    editTextNpad.getText().toString(), notes), realmDB);
+        }
+        startActivity();
 
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.insert(notes);
-        realm.commitTransaction();
+        super.onBackPressed();
+    }
 
-
+    private void startActivity() {
         Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
         startActivity(intent);
         finish();
+    }
 
-        super.onBackPressed();
+    private Notes createNotesObject(String id, String title, String data, Notes notes) {
+        notes.setNotesID(id);
+        notes.setNotesName(title);
+        notes.setData(data);
+        notes.setTimeOfModification(String.valueOf(System.currentTimeMillis()));
+
+        return notes;
     }
 
 

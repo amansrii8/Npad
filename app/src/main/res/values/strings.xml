@@ -5,4 +5,5 @@
     <string name="toolbar_title_note">Make a note</string>
     <string name="menu_title_find">Find</string>
     <string name="notes_title">Title</string>
+    <string name="note_id">PrimaryKey</string>
 </resources>
