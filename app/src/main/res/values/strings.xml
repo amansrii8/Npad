@@ -6,4 +6,10 @@
     <string name="menu_title_find">Find</string>
     <string name="notes_title">Title</string>
     <string name="note_id">PrimaryKey</string>
+    <string name="menu_item_layout">Layout</string>
+    <string name="app_motto">Never Forget!!</string>
+    <string name="sharedpreference_key_layout">Layout</string>
+    <string name="sharedpreference_key_linear">Linear</string>
+    <string name="sharedprefernce_key_staggered">Staggered</string>
+    <string name="menu_title_delete_note">Delete note</string>
 </resources>

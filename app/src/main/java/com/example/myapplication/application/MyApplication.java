@@ -15,6 +15,7 @@ public class MyApplication extends Application {
         RealmConfiguration config =     new RealmConfiguration.Builder()
                                         .name("NOTE.db")
                                         .schemaVersion(1)
+                                        .allowWritesOnUiThread(true)
                                         .deleteRealmIfMigrationNeeded()
                                         .build();
 

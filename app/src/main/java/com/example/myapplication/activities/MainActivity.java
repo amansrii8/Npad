@@ -2,6 +2,7 @@ package com.example.myapplication.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
@@ -15,6 +16,8 @@ import com.example.myapplication.db.Notes;
 import java.util.UUID;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
+
 import static com.example.myapplication.db.Utility.*;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,14 +55,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.mainpage_menu, menu);
+        if (noteID != null) {
+            menu.getItem(0).setVisible(true);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_find:
-                //TODO:
-
-            default:
-                return super.onOptionsItemSelected(item);
+            case R.id.action_delete:
+                deleteNote();
+                startActivity();
+                finish();
+                break;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private String highlightSearchedText() {
@@ -103,6 +117,16 @@ public class MainActivity extends AppCompatActivity {
         notes.setTimeOfModification(String.valueOf(System.currentTimeMillis()));
 
         return notes;
+    }
+
+    private void deleteNote() {
+        realmDB.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<Notes> results =realmDB.where(Notes.class).equalTo("notesID", noteID).findAll();
+                results.deleteAllFromRealm();
+            }
+        });
     }
 
 
