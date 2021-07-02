@@ -14,6 +14,7 @@ import com.example.myapplication.activities.MainActivity;
 import com.example.myapplication.db.Notes;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
@@ -23,7 +24,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     private ItemClickListener onItemClickListener;
     private Context context;
 
-    public MyRecyclerViewAdapter(Context context, ArrayList<Notes> notes) {
+    public MyRecyclerViewAdapter(Context context, List<Notes> notes) {
         myInflator = LayoutInflater.from(context);
         this.notes = new ArrayList<>(notes);
         onItemClickListener = (HomePageActivity)context;

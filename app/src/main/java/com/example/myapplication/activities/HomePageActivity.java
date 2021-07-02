@@ -11,7 +11,8 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -19,8 +20,10 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.example.myapplication.R;
 import com.example.myapplication.db.Notes;
 import com.example.myapplication.recyclerview.MyRecyclerViewAdapter;
+import com.example.myapplication.viewmodel.HomePageActivityViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -33,6 +36,7 @@ public class HomePageActivity extends AppCompatActivity implements MyRecyclerVie
     private MyRecyclerViewAdapter adapter;
     private Realm realmDB;
     public static final String MY_PREFS_NAME = "MyPrefsFile";
+    private HomePageActivityViewModel homePageActivityViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,19 @@ public class HomePageActivity extends AppCompatActivity implements MyRecyclerVie
         recyclerViewDisplayAllNotes = findViewById(R.id.recyclerview_display_all_files);
         Realm.init(this);
         realmDB=Realm.getDefaultInstance();
+
+        homePageActivityViewModel = ViewModelProviders.of(HomePageActivity.this)
+                .get(HomePageActivityViewModel.class);
+
+        homePageActivityViewModel.init();
+
+        homePageActivityViewModel.getNotes().observe(this, new Observer<List<Notes>>() {
+            @Override
+            public void onChanged(List<Notes> notes) {
+                adapter.notifyDataSetChanged();
+            }
+        });
+
         SharedPreferences.Editor sharedPreferences = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
         SharedPreferences sharedPreferences1 = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
 
@@ -70,7 +87,7 @@ public class HomePageActivity extends AppCompatActivity implements MyRecyclerVie
         sharedPreferences.apply();
 
         adapter = new MyRecyclerViewAdapter(this,
-                getPreviouslyStoredNotes());
+                homePageActivityViewModel.getNotes().getValue());
         recyclerViewDisplayAllNotes.setAdapter(adapter);
 
 
