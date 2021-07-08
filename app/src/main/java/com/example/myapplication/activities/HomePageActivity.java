@@ -3,10 +3,12 @@ package com.example.myapplication.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,11 +19,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.example.myapplication.PassMessage;
 import com.example.myapplication.R;
 import com.example.myapplication.db.Notes;
 import com.example.myapplication.recyclerview.MyRecyclerViewAdapter;
 import com.example.myapplication.viewmodel.HomePageActivityViewModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +33,8 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-public class HomePageActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener {
+public class HomePageActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener,
+MyRecyclerViewAdapter.ItemLongClickListener {
 
     private Button buttonStart;
     private RecyclerView recyclerViewDisplayAllNotes;
@@ -60,9 +65,9 @@ public class HomePageActivity extends AppCompatActivity implements MyRecyclerVie
 
         homePageActivityViewModel.init();
 
-        homePageActivityViewModel.getNotes().observe(this, new Observer<List<Notes>>() {
+        homePageActivityViewModel.getNotes().observe(this, new Observer<List<Object>>() {
             @Override
-            public void onChanged(List<Notes> notes) {
+            public void onChanged(List<Object> notes) {
                 adapter.notifyDataSetChanged();
             }
         });
@@ -126,15 +131,23 @@ public class HomePageActivity extends AppCompatActivity implements MyRecyclerVie
 
     @Override
     public void onItemClick(View view, int position) {
+        Log.d("Position", "" + position);
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(getString(R.string.note_id), getPreviouslyStoredNotes().get(position).getNotesID());
+        intent.putExtra(getString(R.string.note_id), ((Notes)homePageActivityViewModel
+                .getNotes().getValue().get(position)).getNotesID());
         startActivity(intent);
         finish();
     }
 
-    private ArrayList<Notes> getPreviouslyStoredNotes() {
-        RealmResults<Notes> notesData =realmDB.where(Notes.class).findAll().sort("timeOfModification", Sort.DESCENDING);
-        return new ArrayList<>(notesData);
+    @Override
+    public void onItemLongClick(View view, String notesId) {
+        homePageActivityViewModel.deleteNotes(notesId);
+        homePageActivityViewModel.getNotes().observe(this, new Observer<List<Object>>() {
+            @Override
+            public void onChanged(List<Object> notes) {
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private void checkRecyclerLayoutType() {

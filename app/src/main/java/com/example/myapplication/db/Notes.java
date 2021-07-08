@@ -10,21 +10,25 @@ public class Notes extends RealmObject {
 
     @PrimaryKey
     @Required
-    String notesID;
+    private String notesID;
 
-    String name;
+    private String name;
 
-    String data;
+    private String data;
 
-    String timeOfModification;
+    private String timeOfModification;
+
+    private boolean pin;
 
     public String getNotesID() {return this.notesID;}
     public String getNotesName() {return this.name;}
     public String getData() {return this.data;}
     public String getTimeOfModification() {return this.timeOfModification;}
+    public boolean isPinned() { return this.pin;}
 
     public void setNotesID(String notesID) {this.notesID = notesID;}
     public void setNotesName(String name) {this.name = name;}
     public void setData(String data) {this.data = data;}
     public void setTimeOfModification(String timeOfModification) {this.timeOfModification = timeOfModification;}
+    public void setPin(boolean isPin) {this.pin = isPin;}
 }

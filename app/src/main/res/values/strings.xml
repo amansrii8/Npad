@@ -12,4 +12,8 @@
     <string name="sharedpreference_key_linear">Linear</string>
     <string name="sharedprefernce_key_staggered">Staggered</string>
     <string name="menu_title_delete_note">Delete note</string>
+    <string name="empty_message_discarded">Empty message has been discarded!</string>
+    <string name="instance">instance</string>
+    <string name="pin_the_note">Pin the note</string>
+    <string name="unpin_the_note">Unpin the note</string>
 </resources>

@@ -5,20 +5,20 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.myapplication.R;
 import com.example.myapplication.db.Notes;
+import com.example.myapplication.viewmodel.MainActivityViewModel;
 
 import java.util.UUID;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
-
-import static com.example.myapplication.db.Utility.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private Realm realmDB;
     private Notes notes;
     private String noteID;
+    private MainActivityViewModel mainActivityViewModel;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +46,19 @@ public class MainActivity extends AppCompatActivity {
         Realm.init(this);
         realmDB = Realm.getDefaultInstance();
 
+        mainActivityViewModel = ViewModelProviders.of(MainActivity.this)
+                .get(MainActivityViewModel.class);
+
+        mainActivityViewModel.init();
+
         noteID = getIntent().getStringExtra("PrimaryKey");
 
         if (noteID != null) {
             notes = getNotesFromPrimaryKey(noteID);
             editTextViewNPadTitle.setText(notes.getNotesName());
             editTextNpad.setText(notes.getData());
+        } else {
+            notes = new Notes();
         }
 
     }
@@ -64,12 +73,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        this.menu = menu;
+        if (notes.isPinned()) {
+            menu.findItem(R.id.action_pin).setVisible(false);
+            menu.findItem(R.id.action_unpin).setVisible(true);
+        } else {
+           menu.findItem(R.id.action_pin).setVisible(true);
+           menu.findItem(R.id.action_unpin).setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
-                deleteNote();
+                mainActivityViewModel.deleteNotes(noteID);
                 startActivity();
                 finish();
+                break;
+            case R.id.action_pin:
+                realmDB.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        notes.setPin(true);
+                    }
+                });
+
+                menu.findItem(R.id.action_pin).setVisible(false);
+                menu.findItem(R.id.action_unpin).setVisible(true);
+                break;
+            case R.id.action_unpin:
+                realmDB.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        notes.setPin(false);
+                    }
+                });
+
+                menu.findItem(R.id.action_pin).setVisible(true);
+                menu.findItem(R.id.action_unpin).setVisible(false);
                 break;
         }
 
@@ -90,16 +134,22 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Notes notes = new Notes();
-        if (noteID != null) {
-            updateNoteIntoDB(createNotesObject(noteID, editTextViewNPadTitle.getText().toString(),
-                    editTextNpad.getText().toString(), notes), realmDB);
+
+        if (editTextViewNPadTitle.getText().toString().equals("")
+                && editTextNpad.getText().toString().equals("")) {
+            Toast.makeText(this, mainActivityViewModel.getMessage(), Toast.LENGTH_SHORT).show();
         } else {
-            insertNoteIntoDB(createNotesObject(UUID.randomUUID().toString(),
-                    editTextViewNPadTitle.getText().toString(),
-                    editTextNpad.getText().toString(), notes), realmDB);
+
+            if (noteID != null) {
+                mainActivityViewModel.updateNoteIntoDB(updateNotesObject(editTextViewNPadTitle.getText().toString(),
+                        editTextNpad.getText().toString(), notes));
+            } else {
+                mainActivityViewModel.insertNoteIntoDB(createNotesObject(UUID.randomUUID().toString(),
+                        editTextViewNPadTitle.getText().toString(),
+                        editTextNpad.getText().toString(), notes));
+            }
+            startActivity();
         }
-        startActivity();
 
         super.onBackPressed();
     }
@@ -119,15 +169,14 @@ public class MainActivity extends AppCompatActivity {
         return notes;
     }
 
-    private void deleteNote() {
-        realmDB.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                RealmResults<Notes> results =realmDB.where(Notes.class).equalTo("notesID", noteID).findAll();
-                results.deleteAllFromRealm();
-            }
-        });
-    }
+    private Notes updateNotesObject(String title, String data, Notes notes) {
+        realmDB.beginTransaction();
+        notes.setNotesName(title);
+        notes.setData(data);
+        notes.setTimeOfModification(String.valueOf(System.currentTimeMillis()));
+        realmDB.commitTransaction();
 
+        return notes;
+    }
 
 }

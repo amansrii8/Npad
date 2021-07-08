@@ -1,8 +1,5 @@
 package com.example.myapplication.viewmodel;
 
-
-
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -14,9 +11,8 @@ import java.util.List;
 
 public class HomePageActivityViewModel extends ViewModel {
 
-    private MutableLiveData<List<Notes>> mNotes;
+    private MutableLiveData<List<Object>> mNotes;
     private NotesRepository notesRepository;
-
 
 
     public void init() {
@@ -29,8 +25,14 @@ public class HomePageActivityViewModel extends ViewModel {
 
     }
 
-    public LiveData<List<Notes>> getNotes() {
+    public LiveData<List<Object>> getNotes() {
         return mNotes;
     }
+
+    public void deleteNotes(String id) {
+        notesRepository.deleteNote(id);
+    }
+
+
 
 }
